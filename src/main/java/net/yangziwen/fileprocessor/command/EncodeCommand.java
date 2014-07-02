@@ -10,9 +10,13 @@ import net.yangziwen.fileprocessor.processor.FileProcessor;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.filefilter.AndFileFilter;
+import org.apache.commons.io.filefilter.HiddenFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.NotFileFilter;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.commons.lang3.BooleanUtils;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -54,6 +58,12 @@ public class EncodeCommand extends AbstractCommand {
 		required = true
 	)
 	public File target;		// target file or folder
+	
+	@Parameter(
+		names = {"-a", "--all"},
+		description = "whether to include hidden folders and files"
+	)
+	public Boolean all = false;
 
 	@Override
 	public void invoke(JCommander commander) {
@@ -61,9 +71,9 @@ public class EncodeCommand extends AbstractCommand {
 			commander.usage(this.getName());
 			return;
 		}
-		new FileProcessor(target, buildFileFilter())
-			.addExecutor(new EncodeExecutor(charset.name()))
-			.process();
+		new FileProcessor(target, buildFileFilter(), buildFolderFilter())
+				.addExecutor(new EncodeExecutor(charset.name()))
+				.process();
 	}
 	
 	private IOFileFilter buildFileFilter() {
@@ -74,7 +84,24 @@ public class EncodeCommand extends AbstractCommand {
 		if(CollectionUtils.isNotEmpty(suffixList)) {
 			andFilter.addFileFilter(new SuffixFileFilter(suffixList));
 		}
-		return andFilter;
+		if(BooleanUtils.isNotTrue(all)) {
+			andFilter.addFileFilter(HiddenFileFilter.VISIBLE);
+			andFilter.addFileFilter(new NotFileFilter(new PrefixFileFilter(".")));
+		}
+		return CollectionUtils.isEmpty(andFilter.getFileFilters())
+				? TrueFileFilter.INSTANCE
+				: andFilter;
+	}
+	
+	private IOFileFilter buildFolderFilter() {
+		AndFileFilter andFilter = new AndFileFilter();
+		if(BooleanUtils.isNotTrue(all)) {
+			andFilter.addFileFilter(HiddenFileFilter.VISIBLE);
+			andFilter.addFileFilter(new NotFileFilter(new PrefixFileFilter(".")));
+		}
+		return CollectionUtils.isEmpty(andFilter.getFileFilters())
+				? TrueFileFilter.INSTANCE
+				: andFilter;
 	}
 
 }

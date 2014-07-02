@@ -13,9 +13,8 @@ public class CharsetConverter implements IStringConverter<Charset> {
 		try {
 			return Charset.forName(charset);
 		} catch (UnsupportedCharsetException e) {
-			e.printStackTrace();
+			throw new ParameterException("charset [" + charset + "] is not supported!");
 		}
-		throw new ParameterException("charset [" + charset + "] is not supported!");
 	}
 
 }

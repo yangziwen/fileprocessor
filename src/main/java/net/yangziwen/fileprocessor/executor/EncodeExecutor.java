@@ -25,7 +25,7 @@ public class EncodeExecutor implements Executor {
 			System.err.println("Failed to detect the charset of file [" + file.getAbsolutePath() + "]");
 			return;
 		}
-		if("utf8".equalsIgnoreCase(detectedCharset) || "utf-8".equalsIgnoreCase(detectedCharset)) {
+		if(detectedCharset.equalsIgnoreCase(charset)) {
 			return;
 		}
 		try {
@@ -34,6 +34,7 @@ public class EncodeExecutor implements Executor {
 			FileUtils.writeStringToFile(tempFile, content, charset);
 			FileUtils.deleteQuietly(file);
 			FileUtils.moveFile(tempFile, file);
+			System.out.println("File [" + file.getAbsolutePath() + "] is encoded from [" + detectedCharset + "] to [" + charset + "]");
 		} catch (Exception e) {
 			System.err.println("Failed to encode the file [" + file.getAbsolutePath() + "] with charset of [" + charset + "]");
 		}

@@ -6,17 +6,20 @@ import java.util.List;
 
 import net.yangziwen.fileprocessor.executor.Executor;
 
+import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 
 public class FileProcessor {
 
 	private File root;
-	private IOFileFilter filter;
+	private IOFileFilter fileFilter;
+	private IOFileFilter folderFilter;
 	private List<Executor> executors = new LinkedList<Executor>();
 	
-	public FileProcessor(File root, IOFileFilter filter) {
+	public FileProcessor(File root, IOFileFilter fileFilter, IOFileFilter folderFilter) {
 		this.root = root;
-		this.filter = filter;
+		this.fileFilter = fileFilter != null? fileFilter: FalseFileFilter.INSTANCE;
+		this.folderFilter = folderFilter != null? folderFilter: FalseFileFilter.INSTANCE;
 	}
 	
 	public FileProcessor addExecutor(Executor executor) {
@@ -36,9 +39,9 @@ public class FileProcessor {
 			execute(target);
 		} else if (target.isDirectory()) {
 			for(File file: target.listFiles()) {
-				if(file.isDirectory()) {
+				if(file.isDirectory() && folderFilter.accept(file)) {
 					process(file);
-				} else if (filter.accept(file)) {
+				} else if (fileFilter.accept(file)) {
 					execute(file);
 				}
 			}
