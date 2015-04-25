@@ -8,4 +8,6 @@ public interface Executor {
 
 	public abstract void execute(File file, FileProcessor processor);
 	
+	public abstract void after();
+	
 }

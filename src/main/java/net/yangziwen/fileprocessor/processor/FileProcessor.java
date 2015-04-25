@@ -29,6 +29,7 @@ public class FileProcessor {
 	
 	public void process() {
 		process(root);
+		doAfter();
 	}
 
 	private void process(File target) {
@@ -51,6 +52,12 @@ public class FileProcessor {
 	private void execute(File file) {
 		for(Executor executor: executors) {
 			executor.execute(file, this);
+		}
+	}
+	
+	private void doAfter() {
+		for(Executor executor: executors) {
+			executor.after();
 		}
 	}
 }

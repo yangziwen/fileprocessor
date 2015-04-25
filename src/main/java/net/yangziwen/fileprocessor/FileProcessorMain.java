@@ -1,15 +1,15 @@
 package net.yangziwen.fileprocessor;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import net.yangziwen.fileprocessor.command.Command;
 import net.yangziwen.fileprocessor.command.EncodeCommand;
+import net.yangziwen.fileprocessor.command.StatsCommand;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
@@ -20,7 +20,10 @@ public class FileProcessorMain {
 		Map<String, Command> commandMap = new HashMap<String, Command>();
 		JCommander commander = new JCommander();
 		
-		List<Command> commandList = Arrays.<Command>asList(new EncodeCommand());
+		List<Command> commandList = Arrays.<Command>asList(
+				new EncodeCommand(),
+				new StatsCommand()
+		);
 		
 		for(Command command: commandList) {
 			commandMap.put(command.getName(), command);

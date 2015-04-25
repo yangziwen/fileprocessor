@@ -65,4 +65,9 @@ public class EncodeExecutor implements Executor {
 		}
 		return null;
 	}
+
+	@Override
+	public void after() {
+		// do nothing
+	}
 }
