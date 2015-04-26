@@ -12,8 +12,8 @@ import org.apache.commons.io.filefilter.HiddenFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.NotFileFilter;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang3.BooleanUtils;
 
 import com.beust.jcommander.JCommander;
@@ -37,16 +37,16 @@ public class StatsCommand extends AbstractCommand {
 	public Boolean all = false;
 	
 	@Parameter(
-		names = {"-s", "--included-suffix"},
-		description = "only files with these suffixes are considered"
+		names = {"-n", "--included-name"},
+		description = "only files with these names are considered"
 	)
-	public List<String> includedSuffixList;
+	public List<String> includedNameList;
 	
 	@Parameter(
-		names = {"-es", "--excluded-suffix"},
-		description = "files with these suffixes are not considered"
+		names = {"-en", "--excluded-name"},
+		description = "files with these names are not considered"
 	)
-	public List<String> excludedSuffixList;
+	public List<String> excludedNameList;
 	
 	@Parameter(
 		names = {"-f", "--folder"},
@@ -68,11 +68,11 @@ public class StatsCommand extends AbstractCommand {
 	
 	private IOFileFilter buildFileFilter() {
 		AndFileFilter andFilter = new AndFileFilter();
-		if(CollectionUtils.isNotEmpty(includedSuffixList)) {
-			andFilter.addFileFilter(new SuffixFileFilter(includedSuffixList));
+		if(CollectionUtils.isNotEmpty(includedNameList)) {
+			andFilter.addFileFilter(new WildcardFileFilter(includedNameList));
 		}
-		if(CollectionUtils.isNotEmpty(excludedSuffixList)) {
-			andFilter.addFileFilter(new NotFileFilter(new SuffixFileFilter(excludedSuffixList)));
+		if(CollectionUtils.isNotEmpty(excludedNameList)) {
+			andFilter.addFileFilter(new NotFileFilter(new WildcardFileFilter(excludedNameList)));
 		}
 		if(BooleanUtils.isNotTrue(all)) {
 			andFilter.addFileFilter(HiddenFileFilter.VISIBLE);
